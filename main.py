@@ -11,7 +11,8 @@ import itertools
 file_path = './caltech101_silhouettes_28.mat'
 data = loadmat(file_path)
 
-"""# Plot an example
+# Plot an example
+""" 
 index = 10
 image = data["X"][index].reshape((28, 28)).T
 label = data["Y"][0][index]
