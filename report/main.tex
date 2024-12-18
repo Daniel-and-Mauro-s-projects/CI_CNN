@@ -56,7 +56,7 @@
     \textbf{Master in Artificial Intelligence}
     \par}
     
-    %\includegraphics[width=0.4\textwidth]{Logo_UPC.png}\par\vspace{1cm}
+    \includegraphics[width=0.4\textwidth]{Logo_UPC.png}\par\vspace{1cm}
 
     \vspace{1cm}
 
@@ -79,15 +79,108 @@
 \newpage
 
 %---------------------------------------------------------------------------------------------------------------------------------
-\section{Introduction}
 
-We are using the Adam optimizer with the categorical_crossentropy loss. 
+TODO: Data augmentation: flipping, rotation, zooming, shifting, etc.
+
+We also implemented exponential decay for the learning rate, but it was not feasible to do the whole grid search, so we just tested it with the best configuration.
+
 
 For the activation function in the non-linear output layer OL we are using the 
+
+ADAM: 
+
+Beta1 controls the moving average of the first moment (i.e., momentum), while Beta2controls the moving average of the second moment (i.e., variance).
+Common settings:
+Beta1 is often set to 0.9 to capture most of the momentum of the gradients.
+Beta2 is typically set to 0.999 to provide better stabilization by giving more weight to past gradients.
+
+We used this settings. 
+
+For weight decay, we used 1e-5,  which is common and widely used for Adam.
+
+
+\section{Introduction}
+The objective of this study is to analyze the performance of different configurations of Convolutional Neural Networks (CNNs) for image classification tasks using the CalTech 101 Silhouettes dataset \cite{dataset}. The dataset contains 8671 images of size $28 \times 28$, classified into 101 silhouette categories. We evaluate the CNN configurations based on mean accuracy, using various hyperparameter settings and dataset splits.
+
+\section{Methodology}
+
+\subsection{Dataset and Preprocessing}
+The dataset \cite{dataset} is provided as a MATLAB file containing the image data and corresponding labels. Each image is reshaped into a $28 \times 28$ grayscale format. Labels are one-hot encoded for compatibility with the CNN architecture.
+
+\subsection{CNN Architecture}
+The base CNN structure comprises:
+\begin{enumerate}
+    \item An input layer.
+    \item Convolutional blocks (NB), each consisting of:
+    \begin{itemize}
+        \item A convolutional layer (kernel size = 3, filter size = FS).
+        \item A non-linear hidden layer with activation functions (Sigmoid or ReLU).
+        \item A max-pooling layer (size = 2, stride = 2).
+    \end{itemize}
+    \item A fully connected layer (128 units, ReLU activation).
+    \item An output layer (softmax activation).
+    \item A categorical cross-entropy loss function.
+\end{enumerate}
+We compared twelve configurations (2x2x3):
+
+For the convolutional blocks, we tested two configurations:
+\begin{itemize}
+    \item NB = 1 with FS = 128.
+    \item NB = 3 with FS = [32, 64, 128].
+\end{itemize}
+
+For the activation functions, we tested two configurations: Sigmoid and ReLU.
+
+
+
+\subsection{Parameter Selection}
+Hyperparameters were tuned as follows:
+\begin{itemize}
+    \item Optimizer: Adam with exponential decay learning rate.
+    \item Learning rate: 0.001 with a decay rate of 0.96 every 100,000 steps.
+    \item Epochs: 20 (60 for extended evaluation).
+    \item Batch size: 32 (128 for extended evaluation).
+\end{itemize}
+Dataset splits of 80/10/10, 40/20/40, and 10/10/80 were used to evaluate the model's performance under varying data availability scenarios.
+
+\section{Results}
+
+\subsection{Mean Accuracy}
+Table \ref{tab:results} summarizes the mean accuracies for different configurations and dataset splits.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        NB & FS & Activation & Data Split & Mean Accuracy \\
+        \hline
+        1  & [128]          & Sigmoid    & 80/10/10     & 0.0791 \\
+        1  & [128]          & ReLU       & 80/10/10     & 0.6206 \\
+        3  & [32, 64, 128]  & Sigmoid    & 80/10/10     & 0.6448 \\
+        3  & [32, 64, 128]  & ReLU       & 80/10/10     & 0.7097 \\
+        \hline
+    \end{tabular}
+    \caption{Mean accuracies for different configurations.}
+    \label{tab:results}
+\end{table}
+
+TODO training and validation times
+
+\section{Discussion and Conclusions}
+The results indicate that increasing the number of convolutional blocks and using the ReLU activation function significantly improve performance. The best configuration achieved a mean accuracy of 70.97\%, demonstrating the efficacy of deeper architectures and non-linear activation functions. Future work could explore additional architectures, such as ResNets, and experiment with data augmentation techniques.
+
+\section{Usage of generative AI models}
+
+We used ChatGPT for spelling checks, grammar corrections, and sentence structure improvements. 
+
+\section*{References}
+\begin{itemize}
+    \item CalTech 101 Silhouettes Dataset: \url{https://people.cs.umass.edu/~marlin/data.shtml}
+    \item ChatGPT by OpenAI as mentioned above. 
+\end{itemize}
 
 % Bibliography
 \newpage
 \printbibliography
-
 
 \end{document}
